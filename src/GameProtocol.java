@@ -76,6 +76,7 @@ public class GameProtocol{
      */
 
     public Card processCards(){
+        System.out.println("STARTING ROUND");
         Card winningCard = new Card(0);
             for (Card c : roundCards){
                 int result = winningCard.compareTo(c);
