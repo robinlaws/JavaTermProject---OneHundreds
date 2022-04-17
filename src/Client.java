@@ -42,6 +42,7 @@ public class Client {
                     System.out.print(" " + card.getValue());
                 }
             }
+            System.out.println("");
             while(true) {
                 if (player.getHand().size() > 0) {
                     playedCard = player.getHand().get(0);
@@ -64,9 +65,8 @@ public class Client {
                 }
                 roundNumber += 1;
             }
-            System.out.println(numOfWins);
-            System.out.println(numOfWins);
-            if (numOfWins == (in.read())){
+            int wins = in.read();
+            if ((byte)numOfWins == wins){
                 System.out.println("Congratulations! You are the winner with " + numOfWins);
             }else{
                 System.out.println("Sorry, better luck next time!");

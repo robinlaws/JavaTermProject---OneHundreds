@@ -65,7 +65,7 @@ public class GameServerThread implements Runnable {
         if (thread.getName().equals(gameProtocol.playerList.get(0).getName())){
             gameProtocol.printRoundNumber();
         }else {
-            thread.sleep(2000);
+            thread.sleep(1000);
         }
         Card winningCard;
         Card playedCard;
@@ -84,9 +84,9 @@ public class GameServerThread implements Runnable {
             }
             gameProtocol.setRoundCards(playedCard);
             if (this.thread.getName().equals(gameProtocol.playerList.get(0).getName())){
-                thread.sleep(5000);}
+                thread.sleep(2000);}
             else{
-                thread.sleep(1000);
+                thread.sleep(500);
             }
             winningCard = gameProtocol.getWinningCard();
 
