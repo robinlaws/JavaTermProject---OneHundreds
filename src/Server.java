@@ -54,7 +54,7 @@ public class Server {
      * @throws IOException
      */
     public static void setup(LinkedList<Player> playerList) throws IOException {
-        System.out.println("\nBeginning the Robot game \n Shuffled deck:");
+        System.out.println("\nBeginning the Robot game \nShuffled deck:");
         CardDeck cardDeck = new CardDeck();
         cardDeck.shuffle();
         cardDeck.print(System.out);
@@ -69,8 +69,8 @@ public class Server {
         for (Player p : playerList) {
             System.out.printf("\n%s hand: \n", p.getName());
             p.printHand(System.out);
-            System.out.println("\n");
         }
+        System.out.println("\n");
     }
 }
 

@@ -9,7 +9,6 @@ public class Player implements Serializable {
 
     private final String name;
     private LinkedList<Card> hand;
-    public int playerStatus = 0;
     public Card currentCard;
 
     /**
@@ -19,6 +18,7 @@ public class Player implements Serializable {
     public Player(String name) {
         this.name = name;
         hand = new LinkedList<>();
+
     }
 
     /**

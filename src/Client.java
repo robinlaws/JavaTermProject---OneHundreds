@@ -1,7 +1,5 @@
 import java.io.*;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.LinkedList;
 
 /**
  * Client class represents the player. Recieves hand from server and will send one card for each round.
@@ -20,7 +18,6 @@ public class Client {
                 Socket gameSocket = new Socket(hostName, portNumber);
                 PrintWriter out = new PrintWriter(gameSocket.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(new InputStreamReader(gameSocket.getInputStream()));
-                BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
 
                 OutputStream outputStream = gameSocket.getOutputStream();
                 ObjectInputStream objectIn = new ObjectInputStream(gameSocket.getInputStream());
@@ -28,13 +25,13 @@ public class Client {
                 InputStream inputStream = gameSocket.getInputStream();
 
         ) {
-            int numOfWins = 1;
+            int numOfWins = 0;
             int roundNumber = 1;
             Card playedCard;
             Player player;
             System.out.println("Welcome to One Hundreds!");
             player = (Player) objectIn.readObject();
-            System.out.println("Welcome " + player.getName() + "\n Here is your hand: ");
+            System.out.println(player.getName() + ": here is your hand: ");
             for (Card card : player.getHand()) {
                 if (card.isWild()) {
                     System.out.print(" WILD");
@@ -48,12 +45,16 @@ public class Client {
                     playedCard = player.getHand().get(0);
                     objectOut.writeObject(playedCard);
                     System.out.println("\nROUND " + roundNumber);
-                    System.out.println("You have played : " + playedCard.getValue());
+                    if (playedCard.isWild()){
+                        System.out.println("You have played : WILD (" + playedCard.getValue() + ")");
+                    } else {
+                        System.out.println("You have played : " + playedCard.getValue());
+                    }
                     player.getHand().remove(0);
                 } else {
                     Card endCard = new Card(1000);
                     objectOut.writeObject(endCard);
-                    System.out.println("NO MORE CARDS");
+                    System.out.println("\nNO MORE CARDS");
                     break;
                 }
                 playedCard = (Card) objectIn.readObject();
@@ -65,16 +66,29 @@ public class Client {
                 }
                 roundNumber += 1;
             }
-            int wins = in.read();
-            if ((byte)numOfWins == wins){
-                System.out.println("Congratulations! You are the winner with " + numOfWins);
-            }else{
-                System.out.println("Sorry, better luck next time!");
+
+
+//            String winnerName;
+//            winnerName = in.readLine();
+//            System.out.println(winnerName);
+//            winnerName = in.readLine();
+//            if (winnerName.equals(player.getName())) {
+//                System.out.println("CONGRATULATIONS! You are the winner with " + numOfWins);
+//            } else {
+//                System.out.println("GAME OVER! Not a winner....Better luck next time.");
+//            }
+//            THIS WILL NOT READ FROM THREAD
+
+            if (numOfWins > 25){
+                System.out.println("\nCONGRATULATIONS! You are the winner with " + numOfWins + " wins!");
+            } else {
+                System.out.println("\nGAME OVER! Not a winner, better luck next time!");
             }
 
             System.out.println("Thanks for playing!");
+        }
 
-        } catch (ClassNotFoundException e) {
+        catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }

@@ -14,6 +14,7 @@ public class GameProtocol{
     LinkedList<Card> roundCards;
     Card winningCard = null;
     int roundNumber;
+    String winnerName = null;
 
     /**
      * Status of gameplay
@@ -80,12 +81,24 @@ public class GameProtocol{
         }
     }
 
+    synchronized public String getWinnerName() {
+        return winnerName;
+    }
+
+    synchronized public void setWinnerName(String winnerName) {
+        this.winnerName = winnerName;
+    }
+
     synchronized public Card getWinningCard() {
         return winningCard;
     }
 
-    synchronized public void setWinningCard(Card winningCard) {
-        this.winningCard = winningCard;
+    synchronized public void setEndCard() {
+
+        this.winningCard = new Card(1000);
+    }
+    synchronized  public void setWinningCard(Card card){
+        this.winningCard = card;
     }
 
     /**
@@ -96,6 +109,7 @@ public class GameProtocol{
 
 
     public void processCards(){
+
         printRoundNumber();
         Card winningCard = new Card(0);
             for (Card c : roundCards){
