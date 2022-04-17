@@ -12,6 +12,8 @@ public class GameProtocol{
     public static Map<Player, Integer> playerMap = new HashMap<>();
     int NUMBER_PLAYERS;
     LinkedList<Card> roundCards;
+    Card winningCard = null;
+    int roundNumber;
 
     /**
      * Status of gameplay
@@ -33,13 +35,18 @@ public class GameProtocol{
         for (Player p : playerList) {
             playerMap.put(p, 0);
         }
+        this.roundNumber = 1;
+    }
+
+    public void printRoundNumber(){
+        System.out.println("ROUND " + roundNumber);
     }
 
     /**
      * getPlayerMap will return the player map with current scores.
      * @return
      */
-    public Map<Player, Integer> getPlayerMap() {
+    synchronized public Map<Player, Integer> getPlayerMap() {
         return playerMap;
     }
 
@@ -47,7 +54,7 @@ public class GameProtocol{
      * getGameStatus will return the current status of the game.
      * @return
      */
-    public Status getGameStatus() {
+    synchronized public Status getGameStatus() {
         return gameStatus;
     }
 
@@ -55,7 +62,7 @@ public class GameProtocol{
      * setGameStatus for setting status of game
      * @param gameStatus status of game
      */
-    public void setGameStatus(Status gameStatus) {
+    synchronized public void setGameStatus(Status gameStatus) {
         this.gameStatus = gameStatus;
     }
 
@@ -65,8 +72,20 @@ public class GameProtocol{
      * @param card players current card.
      */
 
-    public void setRoundCards(Card card) {
+    synchronized public void setRoundCards(Card card) {
+
         roundCards.add(card);
+        if (roundCards.size() == NUMBER_PLAYERS){
+            processCards();
+        }
+    }
+
+    synchronized public Card getWinningCard() {
+        return winningCard;
+    }
+
+    synchronized public void setWinningCard(Card winningCard) {
+        this.winningCard = winningCard;
     }
 
     /**
@@ -75,8 +94,9 @@ public class GameProtocol{
      * @return
      */
 
-    public Card processCards(){
-        System.out.println("STARTING ROUND");
+
+    public void processCards(){
+        printRoundNumber();
         Card winningCard = new Card(0);
             for (Card c : roundCards){
                 int result = winningCard.compareTo(c);
@@ -85,6 +105,7 @@ public class GameProtocol{
                 }
             }
             roundCards.clear();
-            return winningCard;
+            setWinningCard(winningCard);
+            roundNumber += 1;
     }
 }

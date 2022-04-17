@@ -60,7 +60,7 @@ public class Server {
         cardDeck.print(System.out);
 
         Player player1 = new Player("Josh");
-        Player player2 = new Player("Chris Rock");
+        Player player2 = new Player("Chris");
         playerList.add(player1);
         playerList.add(player2);
         cardDeck.deal(playerList);
@@ -69,7 +69,7 @@ public class Server {
         for (Player p : playerList) {
             System.out.printf("\n%s hand: \n", p.getName());
             p.printHand(System.out);
-            System.out.println("\n\nSTARTING GAME");
+            System.out.println("\n");
         }
     }
 }

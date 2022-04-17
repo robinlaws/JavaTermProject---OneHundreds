@@ -28,7 +28,8 @@ public class Client {
                 InputStream inputStream = gameSocket.getInputStream();
 
         ) {
-            int numOfWins = 0;
+            int numOfWins = 1;
+            int roundNumber = 1;
             Card playedCard;
             Player player;
             System.out.println("Welcome to One Hundreds!");
@@ -45,7 +46,8 @@ public class Client {
                 if (player.getHand().size() > 0) {
                     playedCard = player.getHand().get(0);
                     objectOut.writeObject(playedCard);
-                    System.out.println("\nYou have played : " + playedCard.getValue());
+                    System.out.println("\nROUND " + roundNumber);
+                    System.out.println("You have played : " + playedCard.getValue());
                     player.getHand().remove(0);
                 } else {
                     Card endCard = new Card(1000);
@@ -60,9 +62,11 @@ public class Client {
                 } else {
                     System.out.println("Sorry not a winner!");
                 }
+                roundNumber += 1;
             }
             System.out.println(numOfWins);
-            if (numOfWins == in.read()){
+            System.out.println(numOfWins);
+            if (numOfWins == (in.read())){
                 System.out.println("Congratulations! You are the winner with " + numOfWins);
             }else{
                 System.out.println("Sorry, better luck next time!");
