@@ -2,21 +2,20 @@ import java.io.Serializable;
 
 /**
  * Class to represent a card between 1 and 100. The card can be wild
- *
- * @author Josh
+ *  * @author Robin Laws
+ *  * @version CP2561 Term Project
  */
 public class Card implements Comparable<Card>, Serializable {
-
     private final int value;
     private boolean wild;
     private boolean winner;
 
     /**
      * Constructor that takes a value only. Value can't change.
-     * @param value Card value between 1 and 100
+     * @param value between 1 and 100
      */
     public Card(int value) {
-        this.value = value; //trust the value is correct
+        this.value = value;
         this.wild = false;
     }
 
@@ -24,7 +23,6 @@ public class Card implements Comparable<Card>, Serializable {
      * Method isWinner will check the card to see if it has won the round.
      * @return boolean true if winner, false if not winner.
      */
-
     public boolean isWinner() {
         return winner;
     }
@@ -34,7 +32,6 @@ public class Card implements Comparable<Card>, Serializable {
      * has won the round.
      * @param winner boolean
      */
-
     public void setWinner(boolean winner) {
         this.winner = winner;
     }
@@ -99,6 +96,6 @@ public class Card implements Comparable<Card>, Serializable {
      * @return the card value and a " WILD" appended if it's wild
      */
     public String toString(){
-        return String.valueOf(this.value) + (this.isWild() ? " WILD" : "");
+        return (this.value) + (this.isWild() ? " WILD" : "");
     }
 }

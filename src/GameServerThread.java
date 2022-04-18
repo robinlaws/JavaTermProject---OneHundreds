@@ -1,16 +1,14 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Objects;
 
 /**
- * GameServerThread recieves the card to play from client, sends the card for the round and
- * recieves the results. Returns the card with winning status updated.
+ * GameServerThread receives the card to play from client, sends the card for the round and
+ * receives the results. Returns the card with winning status updated.
+ * @author Robin Laws
+ * @version CP2561 Term Project
  */
 public class GameServerThread implements Runnable, Serializable {
-
     GameProtocol gameProtocol;
     Player player;
     Socket socket;
@@ -20,15 +18,16 @@ public class GameServerThread implements Runnable, Serializable {
     BufferedReader in;
     LinkedList<Card> returnedCards;
     Thread thread;
+    DataOutputStream dataOut;
 
     /**
      * Constructor for GameServerThread starts the thread and will initialize input and
      * output streams through the socket provided. Player connected to this thread is
      * initialized with this constructor and will talk to player client.
      * @param gameProtocol game protocol for game play
-     * @param player lient
+     * @param player client
      * @param socket client socket
-     * @throws IOException
+     * @throws IOException IO exception
      */
     public GameServerThread(GameProtocol gameProtocol, Player player, Socket socket) throws IOException {
         this.gameProtocol = gameProtocol;
@@ -40,13 +39,13 @@ public class GameServerThread implements Runnable, Serializable {
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         this.returnedCards = new LinkedList<>();
         this.thread = Thread.currentThread();
+        this.dataOut = new DataOutputStream(socket.getOutputStream());
     }
 
     /**
      * Method setup will send player object to the client for game play.
-     * @throws IOException
+     * @throws IOException IOException
      */
-
     synchronized public void setup() throws IOException {
         objectOut.writeObject(player);
         gameProtocol.getPlayerMap().put(player, 0);
@@ -55,17 +54,17 @@ public class GameServerThread implements Runnable, Serializable {
 
     /**
      * Method playRound will take the card played by the client, and print the details.
-     * The card is played through game protocol where the gameprotocol will wait for
+     * The card is played through game protocol where the game protocol will wait for
      * all player cards and then compare. The winning card is returned for comparison.
-     * @return
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * @return winning card
+     * @throws IOException IOException
+     * @throws ClassNotFoundException Exception class not found
      */
     synchronized public Card playRound() throws IOException, ClassNotFoundException, InterruptedException {
         if (thread.getName().equals(gameProtocol.playerList.get(0).getName())){
             gameProtocol.printRoundNumber();
         }else {
-            thread.sleep(1000);
+            Thread.sleep(1000);
         }
         Card winningCard;
         Card playedCard;
@@ -84,11 +83,10 @@ public class GameServerThread implements Runnable, Serializable {
             }
             gameProtocol.setRoundCards(playedCard);
             if (this.thread.getName().equals(gameProtocol.playerList.get(0).getName())){
-                thread.sleep(1000);}
+                Thread.sleep(1000);}
             else{
-                thread.sleep(500);
+                Thread.sleep(500);
             }
-
         } else {
             gameProtocol.setGameStatus(GameProtocol.Status.GAME_OVER);
             gameProtocol.setEndCard();
@@ -100,15 +98,14 @@ public class GameServerThread implements Runnable, Serializable {
     /**
      * Method sendResults will update the player map to track wins, and will
      * send out the players card played with winning status results.
-     * @param winningCard
-     * @throws IOException
+     * @param winningCard winningCard
+     * @throws IOException IOException
      */
     synchronized public void sendResults(Card winningCard) throws IOException, InterruptedException {
         if (winningCard.getValue() == player.getCurrentCard().getValue()) {
             System.out.println(player.getName() + " GETS A POINT! \n");
             player.getCurrentCard().setWinner(true);
             GameProtocol.playerMap.put(player, GameProtocol.playerMap.get(player) + 1);
-
         }
         objectOut.writeObject(player.currentCard);
     }
@@ -119,31 +116,21 @@ public class GameServerThread implements Runnable, Serializable {
      * socket.
      */
     synchronized public void getWinner() throws IOException, InterruptedException {
-        String winnerName = null;
-        int tieGame = 0;
-        int mostWins = (Collections.max(GameProtocol.playerMap.values()));
-        for (Map.Entry<Player, Integer> entry : GameProtocol.playerMap.entrySet()) {
-            if (entry.getValue() == mostWins) {
-                tieGame += 1;
-                Player winner = entry.getKey();
-                Integer wins = entry.getValue();
-                winnerName = winner.getName();
-                if (winner.getName().equals(this.player.getName())) {
-                    System.out.println("\n" + this.player.getName() + " IS THE WINNER WITH " + wins + " WINS!\n");
-                }
-            }
-        }
-        if (tieGame > 1){
+        Thread.sleep(1000);
+        String winnerName = gameProtocol.getWinnerName();
+        int numOfWins = gameProtocol.getNumOfWins();
+        if (winnerName.equals(player.getName())) {
+            System.out.println("\n" + player.getName() + " IS THE WINNER WITH " + numOfWins + " WINS!\n");
+            dataOut.writeInt(numOfWins);
+        } else if (winnerName.equals("TIE")) {
             System.out.println("TIE GAME!");
+            dataOut.writeInt(0);
+        } else {
+            dataOut.writeInt(numOfWins);
         }
-        gameProtocol.setWinnerName(winnerName);
-        thread.sleep(1000);
-        String finalWinner = gameProtocol.getWinnerName();
-        out.println(finalWinner);
-        thread.sleep(10000);
+        Thread.sleep(1000);
         System.exit(1);
     }
-
 
     /**
      * Thread runnable method which calls methods according to status of game.

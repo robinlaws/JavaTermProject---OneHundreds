@@ -8,24 +8,21 @@ import java.util.concurrent.ExecutorService;
 /**
  * Class Server will create players, client sockets, and allow communication
  * for game play.
+ *  * @author Robin Laws
+ *  * @version CP2561 Term Project
  */
 public class Server {
     public static final int NUMBER_PLAYERS = 2;
 
     public static void main(String[] args) throws IOException {
-
         int portNumber = 4401; //Integer.parseInt(args[0]);
-        boolean listening = true;
 
-        //Track the connections
         LinkedList<Socket> clientSocketList = new LinkedList<>();
         LinkedList<Player> playerList = new LinkedList<>();
         ExecutorService executor = Executors.newFixedThreadPool(NUMBER_PLAYERS);
 
-
-        //Wait until we have all the connections we need
         try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
-            while (listening & clientSocketList.size() < NUMBER_PLAYERS) {
+            while (clientSocketList.size() < NUMBER_PLAYERS) {
                 clientSocketList.add(serverSocket.accept());
             }
         } catch (IOException e) {
@@ -33,10 +30,8 @@ public class Server {
             System.exit(-1);
         }
 
-        //Debug - be sure you got the connections you wanted
-        System.out.printf("Connections: %d", clientSocketList.size());
+        System.out.printf("\nConnections: %d", clientSocketList.size());
         setup(playerList);
-
 
         GameProtocol gameProtocol = new GameProtocol(playerList, NUMBER_PLAYERS);
         LinkedList<GameServerThread> threadList = new LinkedList<>();
@@ -44,16 +39,14 @@ public class Server {
             threadList.add (new GameServerThread(gameProtocol, playerList.get(i), clientSocketList.get(i)));
             executor.execute(threadList.get(i));
         }
-
     }
 
     /**
      * method setup is called to initialize player objects and deal the hands for game play. It will also print
      * player hands on the server side.
      * @param playerList list of players
-     * @throws IOException
      */
-    public static void setup(LinkedList<Player> playerList) throws IOException {
+    public static void setup(LinkedList<Player> playerList){
         System.out.println("\nBeginning the Robot game \nShuffled deck:");
         CardDeck cardDeck = new CardDeck();
         cardDeck.shuffle();
@@ -65,7 +58,6 @@ public class Server {
         playerList.add(player2);
         cardDeck.deal(playerList);
 
-        System.out.println("\nPlayer hands");
         for (Player p : playerList) {
             System.out.printf("\n%s hand: \n", p.getName());
             p.printHand(System.out);

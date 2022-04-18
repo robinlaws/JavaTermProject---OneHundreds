@@ -1,9 +1,10 @@
 import java.io.*;
 import java.net.Socket;
 
+
 /**
- * Client class represents the player. Recieves hand from server and will send one card for each round.
- * Recieves card back with winning status to check if they were a winner.
+ * Client class represents the player. Receives hand from server and will send one card for each round.
+ * Receives card back with winning status to check if they were a winner.
  */
 public class Client {
 
@@ -13,17 +14,11 @@ public class Client {
         String hostName = "localhost";
         int portNumber = 4401;
 
-        //Connect to the game server
         try (
                 Socket gameSocket = new Socket(hostName, portNumber);
-                PrintWriter out = new PrintWriter(gameSocket.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(gameSocket.getInputStream()));
-
-                OutputStream outputStream = gameSocket.getOutputStream();
+                DataInputStream in = new DataInputStream(gameSocket.getInputStream());
                 ObjectInputStream objectIn = new ObjectInputStream(gameSocket.getInputStream());
-                ObjectOutputStream objectOut = new ObjectOutputStream(gameSocket.getOutputStream());
-                InputStream inputStream = gameSocket.getInputStream();
-
+                ObjectOutputStream objectOut = new ObjectOutputStream(gameSocket.getOutputStream())
         ) {
             int numOfWins = 0;
             int roundNumber = 1;
@@ -31,7 +26,7 @@ public class Client {
             Player player;
             System.out.println("Welcome to One Hundreds!");
             player = (Player) objectIn.readObject();
-            System.out.println(player.getName() + ": here is your hand: ");
+            System.out.println(player.getName() + " here is your hand: ");
             for (Card card : player.getHand()) {
                 if (card.isWild()) {
                     System.out.print(" WILD");
@@ -39,13 +34,13 @@ public class Client {
                     System.out.print(" " + card.getValue());
                 }
             }
-            System.out.println("");
-            while(true) {
+            System.out.println();
+            while (true) {
                 if (player.getHand().size() > 0) {
                     playedCard = player.getHand().get(0);
                     objectOut.writeObject(playedCard);
                     System.out.println("\nROUND " + roundNumber);
-                    if (playedCard.isWild()){
+                    if (playedCard.isWild()) {
                         System.out.println("You have played : WILD (" + playedCard.getValue() + ")");
                     } else {
                         System.out.println("You have played : " + playedCard.getValue());
@@ -67,27 +62,17 @@ public class Client {
                 roundNumber += 1;
             }
 
-
-//            String winnerName;
-//            winnerName = in.readLine();
-//            System.out.println(winnerName);
-//            winnerName = in.readLine();
-//            if (winnerName.equals(player.getName())) {
-//                System.out.println("CONGRATULATIONS! You are the winner with " + numOfWins);
-//            } else {
-//                System.out.println("GAME OVER! Not a winner....Better luck next time.");
-//            }
-//            THIS WILL NOT READ FROM THREAD
-
-            if (numOfWins > 25){
+            int wins = in.readInt();
+            if (wins == numOfWins) {
                 System.out.println("\nCONGRATULATIONS! You are the winner with " + numOfWins + " wins!");
+            } else if (wins == 0) {
+                System.out.println("\nTIE GAME! You both had " + numOfWins + " wins!");
             } else {
-                System.out.println("\nGAME OVER! Not a winner, better luck next time!");
+                System.out.println("\nGAME OVER! Not a winner....Better luck next time.");
             }
-
             System.out.println("Thanks for playing!");
-        }
 
+        }
         catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

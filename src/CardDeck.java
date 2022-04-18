@@ -7,6 +7,8 @@ import java.util.function.Supplier;
 
 /**
  * Deck of Cards for use in 100s game
+ *  * @author Robin Laws
+ *  * @version CP2561 Term Project
  */
 public class CardDeck {
 
@@ -22,7 +24,7 @@ public class CardDeck {
 
     /**
      * Deal a deck to a list of players
-     * @param playersList
+     * @param playersList list of players
      */
     public void deal(List<Player> playersList){
         while(this.cardList.size() >= playersList.size()){
@@ -38,27 +40,11 @@ public class CardDeck {
     }
 
     /**
-     * Sort the deck
-     */
-    //TODO remove this - for testing purposes only
-    public void sort(){
-        this.cardList.sort( (c1,c2) -> Card.compare(c1,c2) );
-    }
-
-    /**
      * Print the deck to a printStream
-     * @param printStream
+     * @param printStream print stream of cards
      */
     public void print(PrintStream printStream){
         cardList.forEach((c)-> printStream.print(c.toString() + " "));
-    }
-
-    /**
-     * Get the number of cards remaining
-     * @return
-     */
-    public int cardsRemaining(){
-        return this.cardList.size();
     }
 
     /**
@@ -69,7 +55,6 @@ public class CardDeck {
         for (int i = 1; i <= 100; i++) {
             cardList.add(new Card(i));
         }
-
         //4 Random Wilds
         Supplier<Integer> randomSupplier = () -> new Random().nextInt(100); //Draws 0 to 99 which is the index
 
@@ -82,5 +67,4 @@ public class CardDeck {
             }
         }
     }
-
 }
